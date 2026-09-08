@@ -37,5 +37,5 @@ readonly TEST_FILE="test-file.sh"
 if [[ -f ${TEST_FILE} ]]
 then
 echo "file exists"
-source ${TEST_FILE}
+source ./${TEST_FILE}
 fi
