@@ -32,3 +32,10 @@ echo "not executable"
 fi
 
 #use -w flag to check if file is writable
+
+readonly TEST_FILE="test-file.sh"
+if [[ -f ${TEST_FILE} ]]
+then
+echo "file exists"
+source ${TEST_FILE}
+fi
