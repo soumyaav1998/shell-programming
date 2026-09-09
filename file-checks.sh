@@ -39,3 +39,11 @@ then
 echo "file exists"
 source ./${TEST_FILE}
 fi
+
+# -e checks if a path exists or not. it can be file or dir or or symlink etc
+if [[ -e "/home/soumya/linux/ws/shell-programming/db-load-script.sql" ]]
+then
+echo "exists"
+else
+echo "does not exist"
+fi

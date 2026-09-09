@@ -3,3 +3,20 @@ some_command > /dev/null 2>&1 -> redirects stderr also to black hols
 sleep & -> runs this command in background and returns the current shell terminal to user
 if variable is used without "" then its content will be treated as a list if it has space.
 So always use variable with "" like "${var}"
+
+trace -Tfp <process_id> -> trace and debug system calls made by a running processs
+T -> time info
+f -> child process
+p - parent shell pid
+
+
+Each shell script has a process id and each command inside shell script also has a different process id
+each shell script running on a terminal is associated with a "tty" terminalid and all the commands inside that script along with the script will also be attached to the same tty
+
+Built in commands dont have a prcoess id associated with them.
+Non built in commands like cat have binaries for them already stored pre-packaged in the shell and process id will be generated for them 
+
+2>&1
+This specific combination means: "Redirect stream 2 (errors) to the exact same place stream 1 (normal output) is currently going."
+> output.txt -> puts output of stream 1 (success) into this ifle
+my-command > output.txt 2>&1 -> 1's output going to output.txt, so 2> checks where 1 output is going and also redirects the error stream to also go to output.txt itself
