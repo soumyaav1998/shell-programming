@@ -4,10 +4,11 @@ sleep & -> runs this command in background and returns the current shell termina
 if variable is used without "" then its content will be treated as a list if it has space.
 So always use variable with "" like "${var}"
 
-trace -Tfp <process_id> -> trace and debug system calls made by a running processs
+strace -Tfp <process_id> -> trace and debug system calls made by a running processs
 T -> time info
 f -> child process
 p - parent shell pid
+
 
 
 Each shell script has a process id and each command inside shell script also has a different process id
@@ -20,3 +21,14 @@ Non built in commands like cat have binaries for them already stored pre-package
 This specific combination means: "Redirect stream 2 (errors) to the exact same place stream 1 (normal output) is currently going."
 > output.txt -> puts output of stream 1 (success) into this ifle
 my-command > output.txt 2>&1 -> 1's output going to output.txt, so 2> checks where 1 output is going and also redirects the error stream to also go to output.txt itself
+
+
+echo $$ -> gives current process id
+
+heredoc:
+<command> <<EOF
+something
+someting 
+something
+EOF
+A heredoc, short for “here document,” lets you provide multiple lines of text directly inside a shell script as standard input to a command. It starts with 
