@@ -1,0 +1,48 @@
+Quick sed cheat sheet
+bash
+sed 's/old/new/' file
+Replace first match on each line.
+
+bash
+sed 's/old/new/g' file
+Replace all matches.
+
+bash
+sed -n '3p' file
+Print line 3.
+
+bash
+sed -n '1,5p' file
+Print lines 1 through 5.
+
+bash
+sed '/pattern/p' file
+Print matching lines, but may duplicate normal output.
+
+bash
+sed -n '/pattern/p' file
+Print only matching lines.
+
+bash
+sed '3d' file
+Delete line 3 from output.
+
+bash
+sed '/pattern/d' file
+Delete matching lines from output.
+
+bash
+sed 's/^/prefix: /' file
+Add text at the beginning.
+
+bash
+sed 's/$/ suffix/' file
+Add text at the end.
+
+bash
+sed 's/%$//' file
+Remove a trailing percent sign.
+
+bash
+sed -i.bak 's/old/new/g' file
+Modify the file and create a backup.

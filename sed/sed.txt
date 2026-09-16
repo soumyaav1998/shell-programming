@@ -1,0 +1,490 @@
+1. What is sed?
+sed means stream editor. It reads input line by line, applies an operation, and prints the result.
+
+bash
+sed 'command' filename
+Example:
+
+bash
+sed 's/old/new/' file.txt
+This replaces old with new in the output. It does not modify the original file unless you use -i.
+
+2. Basic working model
+Suppose file.txt contains:
+
+text
+old server
+new server
+old database
+Run:
+
+bash
+sed 's/old/new/' file.txt
+Output:
+
+text
+new server
+new server
+new database
+sed processes each line:
+
+text
+read line → apply command → print line
+The original file remains unchanged.
+
+3. Basic syntax
+bash
+sed [options] 'command' file
+A sed command generally has this structure:
+
+bash
+[address]command
+Examples:
+
+bash
+sed '3d' file.txt
+sed '/error/d' app.log
+sed 's/old/new/g' file.txt
+An address tells sed which lines should be affected.
+
+4. The substitution command
+The most common sed command is substitution:
+
+bash
+s/pattern/replacement/flags
+Example:
+
+bash
+sed 's/error/warning/' app.log
+Here:
+
+Part	Meaning
+s	Substitute
+error	Text or pattern to find
+warning	Replacement text
+/	Separator
+The s command syntax is officially written as s/regexp/replacement/flags.
+
+Replace the first match on each line
+bash
+sed 's/error/warning/' app.log
+Input:
+
+text
+error: connection error
+Output:
+
+text
+warning: connection error
+Only the first error is replaced.
+
+Replace every match on each line
+Use the g flag:
+
+bash
+sed 's/error/warning/g' app.log
+Output:
+
+text
+warning: connection warning
+g means global replacement within the current line.
+
+Ignore case
+bash
+sed 's/error/warning/gi' app.log
+This matches:
+
+text
+error
+Error
+ERROR
+5. Using different delimiters
+The slash is only a delimiter. You can use another character.
+
+This is inconvenient:
+
+bash
+sed 's//old/path//new/path//g' file.txt
+Use | instead:
+
+bash
+sed 's|/old/path|/new/path|g' file.txt
+You can also use #:
+
+bash
+sed 's#/old/path#/new/path#g' file.txt
+This is especially useful for Linux paths, URLs, and filesystem locations.
+
+6. Line addresses
+An address controls which lines receive the command.
+
+Apply to one line
+bash
+sed '3s/old/new/' file.txt
+Only line 3 is changed.
+
+Apply to a range
+bash
+sed '2,5s/old/new/g' file.txt
+The command applies to lines 2 through 5.
+
+Apply to matching lines
+bash
+sed '/ERROR/s/old/new/g' app.log
+Only lines containing ERROR are modified.
+
+Apply between two patterns
+bash
+sed '/START/,/END/d' file.txt
+This deletes the range beginning with START and ending with END.
+
+7. Printing selected lines
+By default, sed prints every input line. Use -n to suppress automatic printing.
+
+Print a specific line
+bash
+sed -n '3p' file.txt
+-n suppresses normal output.
+
+3p prints line 3.
+
+p means print.
+
+Print a range
+bash
+sed -n '3,7p' file.txt
+Prints lines 3 through 7.
+
+Print matching lines
+bash
+sed -n '/error/p' app.log
+This is similar to:
+
+bash
+grep 'error' app.log
+For simple searching, grep is clearer. Use sed when you also need editing.
+
+Print the first line
+bash
+sed -n '1p' file.txt
+Print the last line
+bash
+sed -n '$p' file.txt
+$ means the last line in sed addresses.
+
+8. Deleting lines
+The d command deletes lines from the output.
+
+Delete line 3
+bash
+sed '3d' file.txt
+Delete a range
+bash
+sed '1,3d' file.txt
+Deletes lines 1 through 3 from the output.
+
+Delete lines matching a pattern
+bash
+sed '/DEBUG/d' app.log
+Removes lines containing DEBUG.
+
+Delete blank lines
+bash
+sed '/^[[:space:]]*$/d' file.txt
+Explanation:
+
+^ means beginning of line.
+
+[[:space:]]* means zero or more whitespace characters.
+
+$ means end of line.
+
+Therefore, it matches empty or whitespace-only lines.
+
+Delete comments
+bash
+sed '/^[[:space:]]*#/d' config.conf
+Removes lines whose first meaningful character is #.
+
+9. Removing text
+Remove all percent signs
+bash
+sed 's/%//g' file.txt
+Input:
+
+text
+85%
+100%
+Output:
+
+text
+85
+100
+Remove only a trailing percent sign
+bash
+sed 's/%$//' file.txt
+This removes % only when it appears at the end of a line.
+
+For example:
+
+text
+85%
+becomes:
+
+text
+85
+Remove leading whitespace
+bash
+sed 's/^[[:space:]]*//' file.txt
+Remove trailing whitespace
+bash
+sed 's/[[:space:]]*$//' file.txt
+Remove leading and trailing whitespace
+bash
+sed 's/^[[:space:]]*//; s/[[:space:]]*$//' file.txt
+10. Adding text
+Add text at the beginning
+bash
+sed 's/^INFO: /' file.txt
+The correct form for adding text is:
+
+bash
+sed 's/^/INFO: /' file.txt
+Input:
+
+text
+Application started
+Output:
+
+text
+INFO: Application started
+Add text at the end
+bash
+sed 's/$/ [processed]/' file.txt
+Input:
+
+text
+Application started
+Output:
+
+text
+Application started [processed]
+11. Regular-expression symbols
+Common sed pattern symbols include:
+
+Symbol	Meaning
+^	Beginning of line
+$	End of line
+.	Any single character
+*	Zero or more of the previous character
+[abc]	a, b, or c
+[^abc]	Anything except a, b, or c
+[0-9]	Any digit
+\{m,n\}	Between m and n repetitions in basic regex
+Examples:
+
+bash
+sed -n '/^ERROR/p' app.log
+Print lines starting with ERROR.
+
+bash
+sed -n '/failed$/p' app.log
+Print lines ending with failed.
+
+bash
+sed -n '/[0-9][0-9]*/p' file.txt
+Print lines containing one or more digits.
+
+With extended regular expressions:
+
+bash
+sed -E -n '/ERROR|FAILED/p' build.log
+-E enables extended regular expression syntax.
+
+12. Modify the original file
+Normally, sed only prints transformed output:
+
+bash
+sed 's/old/new/g' file.txt
+The original file remains unchanged.
+
+To modify the file directly:
+
+bash
+sed -i 's/old/new/g' file.txt
+It is safer to create a backup:
+
+bash
+sed -i.bak 's/old/new/g' file.txt
+This modifies file.txt and creates:
+
+text
+file.txt.bak
+The backup contains the original content.
+
+13. Linux and macOS -i difference
+On GNU/Linux, this commonly works:
+
+bash
+sed -i 's/old/new/g' file.txt
+On macOS, the usual form is:
+
+bash
+sed -i '' 's/old/new/g' file.txt
+A portable practical approach is to make a backup:
+
+bash
+sed -i.bak 's/old/new/g' file.txt
+Then remove the backup after checking:
+
+bash
+rm file.txt.bak
+14. Multiple sed commands
+Use multiple -e options:
+
+bash
+sed \
+    -e 's/ERROR/WARNING/g' \
+    -e '/DEBUG/d' \
+    app.log
+This:
+
+Replaces ERROR with WARNING.
+
+Deletes lines containing DEBUG.
+
+You can also separate commands with semicolons:
+
+bash
+sed 's/ERROR/WARNING/g; /DEBUG/d' app.log
+For larger scripts, use a separate sed command file:
+
+bash
+sed -f changes.sed app.log
+Example changes.sed:
+
+text
+s/ERROR/WARNING/g
+/DEBUG/d
+15. Capturing text with groups
+You can capture part of a match using \( and \) and reuse it with \1.
+
+Example:
+
+bash
+echo "name=Alex" | sed 's/^\([^=]*\)=\(.*\)$/key=\1 value=\2/'
+Output:
+
+text
+key=name value=Alex
+The groups are:
+
+\1 — first captured group.
+
+\2 — second captured group.
+
+With extended regular expressions, use -E:
+
+bash
+echo "name=Alex" | sed -E 's/^([^=]*)=(.*)$/key=\1 value=\2/'
+16. Escaping special characters
+If you want to search for a literal special character, escape it.
+
+Example, literal dot:
+
+bash
+sed 's/\./DOT/g' file.txt
+Without \, the dot means “any single character” in a regular expression.
+
+Literal slash using another delimiter:
+
+bash
+sed 's|/usr/bin|/opt/bin|g' file.txt
+Literal & in replacement text must be escaped:
+
+bash
+echo "hello" | sed 's/hello/hello \& goodbye/'
+Output:
+
+text
+hello & goodbye
+In a replacement, & normally means “the entire matched text.”
+
+17. sed with pipes
+sed can process output from another command:
+
+bash
+df -P | sed '1d'
+This removes the header line from df.
+
+Remove the % character from disk-usage values:
+
+bash
+df -P | awk 'NR > 1 { print $5 }' | sed 's/%$//'
+Equivalent approach using only awk:
+
+bash
+df -P | awk 'NR > 1 { sub(/%$/, "", $5); print $5 }'
+Use sed when the operation is text transformation. Use awk when you need fields, calculations, or conditions.
+
+18. sed versus grep versus awk
+Tool	Best use
+grep	Find and filter matching lines
+sed	Replace, delete, or transform text
+awk	Process columns and perform calculations
+cut	Extract simple fields
+tr	Translate or delete characters
+Examples:
+
+bash
+grep 'ERROR' app.log
+Find error lines.
+
+bash
+sed 's/ERROR/WARNING/g' app.log
+Replace error labels.
+
+bash
+awk '{ print $1, $5 }' app.log
+Extract columns.
+
+19. Common mistakes
+Mistake 1: Expecting the file to change
+bash
+sed 's/old/new/g' file.txt
+This only prints changed output.
+
+Use:
+
+bash
+sed -i 's/old/new/g' file.txt
+if you really want to modify the file.
+
+Mistake 2: Forgetting -n
+This command:
+
+bash
+sed '3p' file.txt
+prints every line and prints line 3 a second time.
+
+Use:
+
+bash
+sed -n '3p' file.txt
+Mistake 3: Forgetting g
+bash
+sed 's/error/warning/' file.txt
+replaces only the first match on each line.
+
+Use:
+
+bash
+sed 's/error/warning/g' file.txt
+to replace every match.
+
+Mistake 4: Incorrect pattern for a trailing character
+To remove only a final %, use:
+
+bash
+sed 's/%$//' file.txt
+The $ ensures that a percent sign in the middle of a line is not removed.
