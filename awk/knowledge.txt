@@ -1,0 +1,12 @@
+SYNTAX OF AWK:
+*****************************
+awk -F <field separator> -v <variable> '<action block> { print <what to print> }' <filename>
+awk -F ":" -v roll_no="105" '$1 >= roll_no { print " Printing sr no greater than 105: " $1 " " $2 " " $3 }' sample1.txt
+*****************************
+awk '{ print NR, $2, $4 }' input.txt
+-> NR will give space, if give NR == 8 THEN IT GOES TO 8TH ROW AND GETS COLUMN 2 AND 4
+NF -> no. of fields
+NR -> rows
+awk separates values using spaces
+awk ' {print NF, NR }' input.txt
+$1 -> $ tells to pick the specified column, if we just give 1 then it prints 1 the amount of times there are no. of rows. if there are 5 rows then it will print 1 5 times

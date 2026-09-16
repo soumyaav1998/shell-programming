@@ -1,0 +1,6 @@
+101:Soumya:DevOps Engineer:Bengaluru:75000
+102:Ananya:Software Tester:Mysuru:62000
+103:Rahul:Build Engineer:Chennai:70000
+104:Kiran:Cloud Engineer:Hyderabad:82000
+105:Meera:Release Manager:Pune:90000
+106:Arjun:Embedded Developer:Bengaluru:68000
